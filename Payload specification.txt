@@ -1,0 +1,1 @@
+We need to add sensors for the temrature, pressure, velocity measurement. Also GPS unit is taken into conssideration.
