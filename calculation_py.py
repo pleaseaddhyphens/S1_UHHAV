@@ -8,6 +8,7 @@ payload = 100  # kg
 efficiency_of_motor = 0.8
 velocity_of_wind = 20  # m/s
 weight_of_payload = payload * 98.1  # m/s^2
+# approx 942 m^2 for 80m long for airship # 37 m^2 for 10m log airship 
 
 total_thrust = drag_force + weight_of_payload
 
