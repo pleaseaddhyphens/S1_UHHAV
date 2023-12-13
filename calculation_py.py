@@ -1,6 +1,23 @@
 import numpy as np
 # initially consider sphere parametets, SI measurement system ( m, kg, s)
 
+#### power #####
+drag_force = 2209
+lift_force = 555
+payload = 100  # kg
+efficiency_of_motor = 0.8
+velocity_of_wind = 20  # m/s
+weight_of_payload = payload * 98.1  # m/s^2
+
+total_thrust = drag_force + weight_of_payload
+
+print("Total thrust:", total_thrust)
+total_thrust = drag_force + weight_of_payload
+power = (total_thrust * velocity_of_wind) / efficiency_of_motor
+print("Power:", power)
+###### Power #######
+
+
 alt = 20000 # [m]
 d = 10 #[m]
 volume = 4/3 * np.pi * d **3 #  replace with new volume [kg/m^3]
