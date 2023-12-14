@@ -40,7 +40,7 @@ pitch_angle = 12
 power_one_solar_panel = 800
 coef_efficiency = 0.12
 S_one_solar_panel = 1.050036 * 0.540004 #m*m (example of optimised solar panel)
-general_power = 2000
+general_power = 93000
 weight_one_solar_panel = 2 #kg
 curvature = 2/np.pi #for cylindr
 
@@ -60,6 +60,9 @@ def Drag_force(Density_air, Velocity,Ref_area, C_d ):
  
 Drag_force(Density_air, Velocity,Ref_area, C_d )
 
+def volume(d):
+    return (0.654498 + 0.818162  + 0.0066049) * d**3
+
 def ro(h):
     # tabular data ro is 0.0889
     ro_srat = 1.204 * np.exp(-10000/10400) # density till 11 km altitude
@@ -71,7 +74,6 @@ def lift(v, h):
     all_m = bf/9.8 # availible mass to floal
     return all_m
 
-m = lift(Volume_streamlined_shape, alt)
 
 def drag_force_propeller(pitch_angle,d, P, V0, RPM):
     pitch = np.abs(np.pi * 0.75 * d * np.tan(pitch_angle))
@@ -105,6 +107,8 @@ def weight_solar_panels(N, weight_one_solar_panel):
     weight_solar_panels = weight_one_solar_panel * N
     return(np.round(weight_solar_panels))
 
+m = lift(volume(27), alt)
+
 
 propeller_drag = drag_force_propeller(pitch_angle, d, P, V0, RPM)
 # numbers = numbers_solar_panels(power_one_solar_panel, coef_efficiency, general_power)
@@ -116,3 +120,6 @@ print(f"Surface of curved area: {Surface_curved_area} m^2")
 print(f"Numbers of solar panels: {N}")
 print(f"Surface of solar panels: {Surface_solar_panels} m^2")
 print(f"Weight of solar panels: {Weight_solar_panels} kg")
+
+
+
