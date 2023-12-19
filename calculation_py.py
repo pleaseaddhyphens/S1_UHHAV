@@ -6,7 +6,7 @@ drag_force = 2209
 lift_force = 555
 payload = 100  # kg
 efficiency_of_motor = 0.8
-velocity_of_wind = 20  # m/s
+velocity_of_wind = 6  # m/s
 weight_of_payload = payload * 98.1  # m/s^2
 
 # power = (total_thrust * velocity_of_wind) / efficiency_of_motor
@@ -48,10 +48,11 @@ curvature = 2/np.pi #for cylindr
 # Volume and surface of the shape of GNVR 
 
 
-def Drag_force(Density_air, Velocity, Ref_area):
+def Drag_force(Density_air, Velocity, Volume):
     '''C_D coeff depends on volume, altitude, fitness ratio. 
     For the airship, Wikipedia states that instead of cross-section area, 
     we need to use reference area A = V^(2/3)'''
+    Ref_area = Volume**(2/3)
 
     drag_force = 0.5 * Density_air * Velocity**2 * Ref_area * C_d
     return drag_force
@@ -64,8 +65,9 @@ def surface(d):
     '''envelope surface'''
     return (3.26898 + 4.04103  + 0.158517) * d**2
 
-def lift(v, h):
+def lift(v):
     '''calculating buyancy for 20km altitude, ro from tabular data. It returns availible mass'''
+    # bf = 1.29 *v * 9.8
     bf  = 0.0889 * v * 9.8 #Archimides forse [N] 
     all_m = bf/9.8 # availible mass to floal
     return all_m
@@ -102,19 +104,44 @@ def weight_solar_panels(N, weight_one_solar_panel):
     weight_solar_panels = weight_one_solar_panel * N
     return(np.round(weight_solar_panels))
 
-m = lift(volume(27), alt)
-
 propeller_drag = drag_force_propeller(pitch_angle, d, P, V0, RPM)
 # numbers = numbers_solar_panels(power_one_solar_panel, coef_efficiency, general_power)
 Surface_solar_panels = surface_solar_panels(N, S_one_solar_panel, curvature)
 Weight_solar_panels = weight_solar_panels(N, weight_one_solar_panel)
-print(f"Drag force: {Drag_force(0.08, 10, surface(27))}, N")
-print(f"Propeller drag force: {propeller_drag}, N")
-print(f"Availible mass for floating in the {alt} m altitude: {np.round(m,3)} kg")
-print(f"Surface of curved area: {Surface_curved_area} m^2")
-print(f"Numbers of solar panels: {N}")
-print(f"Surface of solar panels: {Surface_solar_panels} m^2")
-print(f"Weight of solar panels: {Weight_solar_panels} kg")
+
+# calculation 18.12 Valentin
+d = 95/3.05
+k=13
+solar_weignt = 2 * surface(d)/k #mass of the solaar array using square meter density
+env_weight = 0.1 * (surface(d))
+bal_weight = 0.1 * (surface(d)) # env ro = 100 gramm per meter square #UN 5100
+M_he = 0.004 # molar mass
+P_a = 5500 # pressure 20km
+R = 8.31
+T = 216
+m_he = M_he * P_a *1.03 * volume(d)/(R*T)
+mass = solar_weignt + env_weight + 130  + 50 + 200 + 500 + m_he  # 130 kg is payload + 50 kg compressor valve system + 100kg propulsion mass kg on batteries
+V_he0 = mass/1.29
+V_bal0 = volume(d) - V_he0
+bal_mass = 0.1* (4 * 3.14 * (volume(d)*3/(4*3.14))**(2/3)) # density * surface of ballonet
+mass +=bal_mass
+
+print(f"Volume: {volume(d)}")
+print(f"enc surface: {surface(d)}")
+print(f"solar availible sufrace: {surface(d)/k}")
+print(f"Drag force: {Drag_force(0.08, 40, volume(d))}, N")
+print(f"sloar weight: {solar_weignt} kg")
+print(f"env_weight: {env_weight} kg")
+print(f"mass: {mass} kg")
+print(f"net  mass: {lift(volume(d)) - mass} kg")
+
+
+# print(f"Propeller drag force: {propeller_drag}, N")
+# print(f"Availible mass for floating in the {alt} m altitude: {np.round(m,3)} kg")
+# print(f"Surface of curved area: {Surface_curved_area} m^2")
+# print(f"Numbers of solar panels: {N}")
+# print(f"Surface of solar panels: {Surface_solar_panels} m^2")
+# print(f"Weight of solar panels: {Weight_solar_panels} kg")
 
 
 
